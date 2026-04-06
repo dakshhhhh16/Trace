@@ -189,10 +189,6 @@ matcher.Config{
 
 ---
 
-## 🤝 Contributing
-
-We welcome contributions from the community! Here's how to get started:
-
 ### Development Setup
 
 ```bash
@@ -218,28 +214,6 @@ make build
 4. **Test**: Ensure your code passes linting (`make lint`)
 5. **Commit**: Write clear, semantic commit messages
 6. **PR**: Open a Pull Request with a detailed description
-
-### What We're Looking For
-
-- 🐛 Bug fixes and performance improvements
-- 📚 Documentation enhancements
-- ✨ New vulnerability database integrations
-- 🧪 Test coverage improvements
-- 🛡️ **Kyverno integration**: Policy-driven SBOM validation (see roadmap below)
-
-> **Roadmap Highlight**: We're building native Kyverno policy support to enable admission-time SBOM validation—block deployments that don't meet your supply chain security standards.
-
-- 🔌 Additional SBOM format support
-
-### Code of Conduct
-
-Be respectful, inclusive, and constructive. We're building something together.
-
----
-
-## 📜 License
-
-© Daksh Pathak. All rights reserved.
 
 ---
 
