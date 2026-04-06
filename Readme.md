@@ -11,9 +11,7 @@
   <a href="#-quick-start">Quick Start</a> •
   <a href="#%EF%B8%8F-how-it-works">How It Works</a> •
   <a href="#-api-reference">API Reference</a> •
-  <a href="docs/TROUBLESHOOTING_AND_ROADMAP.md">Troubleshooting</a> •
-  <a href="docs/TROUBLESHOOTING_AND_ROADMAP.md#feature-roadmap">Roadmap</a> • 
-  <a href="docs/WHY_I_BUILT_THIS.md">Why I Built This</a>
+  <a href="#-contributing">Contributing</a>
 </p>
 
 ---
