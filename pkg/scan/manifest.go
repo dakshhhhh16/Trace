@@ -21,8 +21,6 @@ import (
 	"github.com/anchore/syft/syft/source"
 )
 
-const defaultImage = "manzilrahul/k8s-custom-controller:latest"
-
 func ImageReference(name string) string {
 	// read an image string reference from the command line or use a default
 	//if len(os.Args) > 1 {
@@ -63,11 +61,17 @@ func SaveManifestToFile(manifest *sbom.SBOM, filePath string) error {
 	if err != nil {
 		return fmt.Errorf("failed to create file: %w", err)
 	}
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			log.Printf("failed to close file: %v", err)
+		}
+	}()
 
 	_, err = io.Copy(file, cyclonedxFormatSbom)
 	if err != nil {
-		os.Remove(filePath)
+		if rmErr := os.Remove(filePath); rmErr != nil {
+			log.Printf("failed to remove file: %v", rmErr)
+		}
 		return fmt.Errorf("failed to write Manifest to file: %w", err)
 	}
 
@@ -117,7 +121,11 @@ func GetAllVulnAndUpload(s *sbom.SBOM) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to create vulnerability file: %w", err)
 	}
-	defer vulnFile.Close()
+	defer func() {
+		if err := vulnFile.Close(); err != nil {
+			log.Printf("failed to close vulnerability file: %v", err)
+		}
+	}()
 
 	enc := json.NewEncoder(vulnFile)
 	enc.SetIndent("", "  ")

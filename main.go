@@ -65,7 +65,9 @@ func main() {
 
 	// Start server
 	log.Println("[INFO] Trace Engine starting on port 7789...")
-	router.Run(":7789")
+	if err := router.Run(":7789"); err != nil {
+		log.Fatalf("[FATAL] Failed to start server: %v", err)
+	}
 }
 
 func printBanner() {

@@ -72,12 +72,18 @@ func (h *ScanHandler) GenerateScanSbomVul(c *gin.Context) {
 		})
 		return
 	}
-	defer os.Remove(manifestFilePath)
+	defer func() {
+		if err := os.Remove(manifestFilePath); err != nil {
+			log.Printf("Warning: failed to remove manifest file: %v", err)
+		}
+	}()
 
 	// ==================== Vulnerability Scan ====================
 	vulnFilePath, err := scan.GetAllVulnAndUpload(manifest)
 	if err != nil {
-		os.Remove(manifestFilePath)
+		if rmErr := os.Remove(manifestFilePath); rmErr != nil {
+			log.Printf("Warning: failed to remove manifest file: %v", rmErr)
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": fmt.Sprintf("Failed to generate vulnerabilities: %v", err),
 		})
@@ -91,8 +97,12 @@ func (h *ScanHandler) GenerateScanSbomVul(c *gin.Context) {
 	manifestS3Key := fmt.Sprintf("trace/%s/%s/manifest.json", orgID, imageID)
 	err = h.S3Client.UploadFile(ctx, h.BucketName, manifestS3Key, manifestFilePath)
 	if err != nil {
-		os.Remove(manifestFilePath)
-		os.Remove(vulnFilePath)
+		if rmErr := os.Remove(manifestFilePath); rmErr != nil {
+			log.Printf("Warning: failed to remove manifest file: %v", rmErr)
+		}
+		if rmErr := os.Remove(vulnFilePath); rmErr != nil {
+			log.Printf("Warning: failed to remove vuln file: %v", rmErr)
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": fmt.Sprintf("Failed to upload Manifest to S3: %v", err),
 		})
@@ -103,8 +113,12 @@ func (h *ScanHandler) GenerateScanSbomVul(c *gin.Context) {
 	vulnS3Key := fmt.Sprintf("trace/%s/%s/vulnerabilities.json", orgID, imageID)
 	err = h.S3Client.UploadFile(ctx, h.BucketName, vulnS3Key, vulnFilePath)
 	if err != nil {
-		os.Remove(manifestFilePath)
-		os.Remove(vulnFilePath)
+		if rmErr := os.Remove(manifestFilePath); rmErr != nil {
+			log.Printf("Warning: failed to remove manifest file: %v", rmErr)
+		}
+		if rmErr := os.Remove(vulnFilePath); rmErr != nil {
+			log.Printf("Warning: failed to remove vuln file: %v", rmErr)
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": fmt.Sprintf("Failed to upload vulnerabilities to S3: %v", err),
 		})
@@ -223,7 +237,11 @@ func (h *ScanHandler) DownloadScanFile(c *gin.Context) {
 		})
 		return
 	}
-	defer os.Remove(localFile)
+	defer func() {
+		if err := os.Remove(localFile); err != nil {
+			log.Printf("Warning: failed to remove local file: %v", err)
+		}
+	}()
 
 	c.File(localFile)
 }
